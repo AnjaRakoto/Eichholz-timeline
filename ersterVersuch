@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Eichholz Timeline & Route</title>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+  #map { height: 50vh; }
+  #timeline { overflow-x: auto; white-space: nowrap; padding: 10px; background: #f0f0f0; }
+  .event { display: inline-block; background: #fff; border: 1px solid #ccc; margin-right: 10px; padding: 10px; min-width: 200px; border-radius: 5px; }
+  .event h3 { margin: 0 0 5px 0; font-size: 1em; }
+  .event p { margin: 0; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="timeline"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  // Daten der Orte und Ereignisse
+  const events = [
+    {
+      date: "1990",
+      title: "Simon geboren",
+      description: "Simon Wenz wird in Krefeld geboren.",
+      coords: [51.3397, 6.5983] // Krefeld
+    },
+    {
+      date: "Weilburg",
+      title: "Simon wächst in Weilburg auf",
+      description: "Kindheit in Weilburg.",
+      coords: [50.4287, 8.2478]
+    },
+    {
+      date: "WS 2010",
+      title: "Simon kommt zum Studium nach Saarbrücken",
+      description: "Beginn Studium Lehramt Französisch, Englisch und Theologie.",
+      coords: [49.2402, 6.9969] // Saarbrücken
+    },
+    {
+      date: "WS 2010",
+      title: "Mariele Erasmus-Semester in Limoges",
+      description: "Mariele ist in Frankreich.",
+      coords: [45.8336, 1.2611] // Limoges
+    },
+    {
+      date: "März 2011",
+      title: "Simon & Mariele lernen sich kennen",
+      description: "Treffen in FeG Saarbrücken.",
+      coords: [49.2402, 6.9969]
+    },
+    {
+      date: "Sept 2017",
+      title: "Mariele erstes Madagaskar Praktikum",
+      description: "7 Monate im Goethe Zentrum Madagaskar.",
+      coords: [-18.8792, 47.5079] // Antananarivo Madagaskar
+    },
+    {
+      date: "11.10.2024",
+      title: "Standesamtliche Hochzeit",
+      description: "Heirat im Schloss Eulenbroich.",
+      coords: [50.9304, 7.1392] // Schloss Eulenbroich, Rösrath
+    },
+    {
+      date: "26.07.2025",
+      title: "Kirchliche Hochzeit",
+      description: "Hochzeitshöhepunkt in Saarbrücken.",
+      coords: [49.2402, 6.9969]
+    }
+  ];
+
+  // Karte initialisieren
+  const map = L.map('map').setView([49.0, 7.0], 6);
+
+  // OpenStreetMap Layer
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Marker für Events
+  let markers = events.map(ev => {
+    return L.marker(ev.coords).addTo(map).bindPopup(`<b>${ev.title}</b><br>${ev.date}<br>${ev.description}`);
+  });
+
+  // Timeline HTML erstellen
+  const timelineDiv = document.getElementById("timeline");
+  events.forEach((ev, i) => {
+    const el = document.createElement("div");
+    el.className = "event";
+    el.innerHTML = `<h3>${ev.date} - ${ev.title}</h3><p>${ev.description}</p>`;
+    el.style.cursor = "pointer";
+    el.onclick = () => {
+      map.flyTo(ev.coords, 12, {duration: 1.5});
+      markers[i].openPopup();
+    };
+    timelineDiv.appendChild(el);
+  });
+
+  // Animation: Marker bewegt sich nacheinander
+  let currentIndex = 0;
+  const movingMarker = L.circleMarker(events[0].coords, {radius: 10, color: "red"}).addTo(map);
+
+  function animateRoute() {
+    if (currentIndex >= events.length - 1) return;
+    let start = events[currentIndex].coords;
+    let end = events[currentIndex + 1].coords;
+    let steps = 100;
+    let step = 0;
+
+    function stepMove() {
+      step++;
+      if (step > steps) {
+        currentIndex++;
+        setTimeout(animateRoute, 1000); // Pause 1s zwischen Stationen
+        return;
+      }
+      let lat = start[0] + (end[0] - start[0]) * (step / steps);
+      let lng = start[1] + (end[1] - start[1]) * (step / steps);
+      movingMarker.setLatLng([lat, lng]);
+      setTimeout(stepMove, 50);
+    }
+    stepMove();
+  }
+
+  animateRoute();
+
+</script>
+
+</body>
+</html>
