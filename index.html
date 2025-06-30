@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timeline & Route von Mariele & Simon</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xwE/HOlGNTC1uMBzNqd0t7e86K8LMxV0zX0rZjTZx3mQVt0pR3hrbb7kk+eylJ2p6FSIjpt3rbZZZ6EdaBo3sA=="
+    crossorigin=""
+  />
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f7f7f7;
+    }
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+    .timeline {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    .event {
+      margin-bottom: 20px;
+    }
+    .event h3 {
+      margin: 0;
+      color: #444;
+    }
+    .event p {
+      margin: 5px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="timeline">
+    <div class="event">
+      <h3>11. Oktober 2014</h3>
+      <p>Standesamtliche Trauung im Schloss Eulenbroich.</p>
+    </div>
+    <div class="event">
+      <h3>26. Juli 2025</h3>
+      <p>Kirchliche Hochzeit in Saarbrücken.</p>
+    </div>
+    <div class="event">
+      <h3>24. März 2024</h3>
+      <p>Verlobung in Madagaskar auf der Terrasse von Mariele in Ankatso.</p>
+    </div>
+    <div class="event">
+      <h3>30. Juni 2023</h3>
+      <p>Mariele und Simon kommen offiziell zusammen.</p>
+    </div>
+    <div class="event">
+      <h3>März 2011</h3>
+      <p>Erstes Treffen im Raum der FeG Saarbrücken.</p>
+    </div>
+    <div class="event">
+      <h3>WS 2010</h3>
+      <p>Simon beginnt das Studium in Saarbrücken, Mariele ist in Limoges.</p>
+    </div>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-QVb4axhKcBi/SyU9mKDkz8TzMHXcDd3PC2A3xKHFLKxFCRAJZ9bOUg+n9uwSkF3bGLy1eKjAL9TuUloA6A6+3w=="
+    crossorigin=""
+  ></script>
+  <script>
+    const map = L.map('map').setView([49.240157, 7.000], 5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    const locations = [
+      { name: 'Krefeld (Simons Geburt)', coords: [51.3388, 6.5853] },
+      { name: 'Weilburg (Simons Kindheit)', coords: [50.4848, 8.2611] },
+      { name: 'Iserlohn (Marieles Kindheit)', coords: [51.3755, 7.7028] },
+      { name: 'Saarbrücken (Studium & Begegnung)', coords: [49.240157, 6.996933] },
+      { name: 'Limoges (Marieles Erasmus)', coords: [45.8336, 1.2611] },
+      { name: 'Pforzheim (Simons Ref)', coords: [48.8912, 8.6949] },
+      { name: 'Köln/Engelskirchen (Simons Job)', coords: [50.9848, 7.4156] },
+      { name: 'Antananarivo (Marieles Madagaskarzeit)', coords: [-18.8792, 47.5079] },
+      { name: 'La Réunion (Urlaub)', coords: [-21.1151, 55.5364] },
+    ];
+
+    const polyline = L.polyline(locations.map(l => l.coords), { color: 'blue' }).addTo(map);
+
+    locations.forEach(loc => {
+      L.marker(loc.coords).addTo(map).bindPopup(loc.name);
+    });
+
+    map.fitBounds(polyline.getBounds());
+  </script>
+</body>
+</html>
